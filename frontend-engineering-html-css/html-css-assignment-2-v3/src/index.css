@@ -1,0 +1,443 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bad+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400&display=swap');
+
+body {
+  background-color: #07191d;
+  color: white;
+  margin: 10px 20px 0px 20px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+nav img.logo {
+  width: 40px;
+  padding: 20px;
+  margin: 0px 0px 0px 0px;
+}
+
+div.logo {
+  display: flex;
+  align-items: center;
+}
+
+@media only screen and (min-width: 1080px) {
+  nav {
+    font-size: 1.1em;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+  }
+}
+
+@media only screen and (max-width: 1080px) {
+  nav {
+    font-size: 1.1em;
+    font-weight: bold;
+    display: flex;
+    display-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+  }
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: transparent;
+}
+nav ul li {
+  float: left;
+}
+nav ul li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  background-color: #07303b;
+  border-radius: 20px;
+  color: #00c2d7;
+}
+img {
+  border-radius: 100%;
+}
+
+.hero {
+  background-color: transparent;
+  height: 70vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  text-align: center;
+  color: white;
+}
+
+@media only screen and (max-width: 1080px) {
+  .hero {
+    margin-top: 200px;
+    background-color: transparent;
+    height: 70vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    text-align: center;
+    color: white;
+  }
+}
+
+.hero-text {
+  text-align: justify;
+  font-size: 2em;
+  font-weight: bold;
+  max-width: 30%;
+  line-height: 1.2em;
+  color: #00b3cd;
+  font-family: 'Bad Script', cursive;
+}
+hr {
+  border: 1px solid #00b3cd;
+  width: 50%;
+  margin: 0px 0px 0px 0px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+div.hero-text p {
+  font-size: 25px;
+  font-weight: normal;
+  color: #c45045;
+}
+
+div.hero-text mark,
+div.hero-text span {
+  background-color: #00b3cd;
+  color: white;
+  cursor: pointer;
+  padding: 2px 7px 2px 7px;
+  border-radius: 5px;
+  color: black;
+}
+
+div.hero-text p.details {
+  font-size: 20px;
+  font-weight: normal;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  margin-top: 30px;
+}
+
+div#location {
+  width: 20px;
+}
+
+div.hero img {
+  width: 60%;
+}
+
+h1.menu {
+  font-size: 2.5em;
+  font-weight: bold;
+  font-family: 'Bad Script', cursive;
+  color: #00b3cd;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+section#skills,
+section#projects,
+section#contact,
+section#links {
+  margin-left: 23%;
+  margin-right: 23%;
+  margin-bottom: 20px;
+}
+
+ul.skills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-items: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 5px;
+  overflow: hidden;
+  background-color: transparent;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+ul.skills li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-radius: 20px;
+  background-color: #00b3cd;
+  margin: 10px 10px 10px 0px;
+  width: 100%;
+  text-align: center;
+}
+
+ul.skills li a:hover {
+  background-color: #00c2d7;
+  color: black;
+}
+
+ul.projects {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 20px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: transparent;
+  margin-top: 20px;
+}
+
+@media only screen and (max-width: 1080px) {
+  ul.projects {
+    display: grid;
+    grid-template-columns: auto;
+    gap: 20px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: transparent;
+    margin-top: 20px;
+  }
+}
+ul.projects li {
+  background-color: #00b3cd;
+  border-radius: 20px;
+  gap: 20px;
+  padding: 20px;
+  color: white;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+ul.links li {
+  display: inline;
+  margin: 0px 10px 0px 0px;
+  padding: 0px 10px 0px 0px;
+  text-decoration: none;
+}
+
+ul.projects li a,
+ul.links li a {
+  color: white;
+  text-decoration: none;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  padding: 30px;
+  color: white;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 1em;
+  font-weight: normal;
+  font-family: 'Open Sans', sans-serif;
+}
+
+form input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 20px;
+  border: none;
+  background-color: #00c2d7;
+  color: white;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+form button {
+  padding: 12px 30px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 20px;
+  border: none;
+  background-color: #00c2d7;
+  color: white;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+footer {
+  background-color: transparent;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: 200px;
+  margin-bottom: 20px;
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+footer a {
+  color: #00b3cd;
+  text-decoration: none;
+}
