@@ -93,14 +93,12 @@ func FormatRupiah(number int) string {
 
 	// Agar lebih mudah menghitung dari belakang,
 	// nilai string perlu dibalik,
-
 	for i, j := 0, len(numberRef)-1; i < j; i, j = i+1, j-1 {
 		numberRef[i], numberRef[j] = numberRef[j], numberRef[i]
 	}
 
 	// kita ubah lagi jadi string
 	// money = strings.Join(numberRef, "")
-
 	// Lakukan loop dengan tiap 3 karakter (modulo 3)
 	// kita tambahkan titik,
 	//  kecuali jika karakter terakhir (karena akan berada di depan karakter pertama jika dibalik)

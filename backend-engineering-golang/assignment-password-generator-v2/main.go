@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"unicode"
 )
 
@@ -62,43 +63,64 @@ func removeSpace(str string) string {
 	return result
 }
 
+/*
+	konsonan kecil jadi besar
+	konsonan besar jadi kecil
+
+	kebalikannya adalah
+
+	vokal kecil jadi besar
+	vokal besar jadi kecil
+
+*/
+
 func changeLetterCase(str string) string {
 	var result string
 	for _, v := range str {
-		// cek apakah dia ga huruf vokal
-		if _, ok := vocal[string(v)]; !ok {
-			// cek apakah hurufnya besar
-			if unicode.IsUpper(v) {
-				// ubah jadi huruf kecil
-				result += string(unicode.ToLower(v))
+		if vocal, ok := vocal[string(v)]; !ok {
+			if unicode.IsLower(v) {
+				result += strings.ToUpper(string(v))
 			} else {
-				result += string(unicode.ToUpper(v))
+				result += strings.ToLower(string(v))
 			}
 		} else {
 			if unicode.IsLower(v) {
-				result += string(unicode.ToUpper(v))
+				result += strings.ToUpper(vocal)
 			} else {
-				result += string(v)
+				result += strings.ToLower(vocal)
 			}
 		}
+
+		//// cek apakah dia ga huruf vokal
+		//if _, ok := vocal[string(v)]; !ok {
+		//	// cek apakah hurufnya besar
+		//	if unicode.IsUpper(v) {
+		//		// ubah jadi huruf kecil
+		//		result += string(unicode.ToLower(v))
+		//	} else {
+		//		result += string(unicode.ToUpper(v))
+		//	}
+		//} else {
+		//	if unicode.IsLower(v) {
+		//		result += string(unicode.ToUpper(v))
+		//	} else {
+		//		result += string(v)
+		//	}
+		//}
 	}
 
 	return result
 }
 
 func Generate(str string) string {
+	// 1. reverse string
 	reversedStr := Reverse(str)
+	// 2. mengubah ke vokal berikutnya
 	changedToNextVocal := ChangeToNextVocal(reversedStr)
-	fmt.Println("----")
-	fmt.Println(changedToNextVocal)
-	fmt.Println("----")
+	// 3. ubah huruf besar selain vokal jadi huruf kecil, dan sebaliknya
 	changedLetterCase := changeLetterCase(changedToNextVocal)
-	removedSpace := removeSpace(changedLetterCase)
-	return removedSpace
-}
-
-func isMinimumCheck(base int, data int) bool {
-	return data >= base
+	// 4. hapus spasinya
+	return removeSpace(changedLetterCase)
 }
 
 func isContainSymbolCheck(str string) bool {
@@ -107,12 +129,19 @@ func isContainSymbolCheck(str string) bool {
 			return true
 		}
 	}
+
+	allsymbols := "!@#$%^&*()_+{}|:<>?`~-=[]\\;',./"
+	for _, v := range allsymbols {
+		if strings.ContainsRune(str, v) {
+			return true
+		}
+	}
 	return false
 }
 
 func isContainPunctCheck(str string) bool {
 	for _, v := range str {
-		if unicode.IsPunct(v) {
+		if unicode.IsPunct(v) || unicode.IsMark(v) {
 			return true
 		}
 	}
@@ -174,32 +203,35 @@ func isAllContainsLetterCheck(str string) bool {
 }
 
 func isAllJustContainsNumberAndLetterCheck(str string) bool {
+	total := len(str)
+	totalLetter := 0
+	totalNumber := 0
+
 	for _, v := range str {
-		if !unicode.IsLetter(v) && !unicode.IsNumber(v) {
-			return false
+		if unicode.IsLetter(v) {
+			totalLetter++
+			continue
+		}
+		if unicode.IsNumber(v) {
+			totalNumber++
+			continue
 		}
 	}
-	return true
+	return total-(totalLetter+totalNumber) == 0
 }
 
 func isVeryWeakPasswordStrength(str string) bool {
-	return isMinimumCheck(0, len(str))
+	return len(str) < 7
 }
 
 func isWeakPasswordStrength(str string) bool {
-	if !isMinimumCheck(7, len(str)) {
+	if len(str) < 7 {
 		return false
 	}
 
-	if isAllContainsNumberCheck(str) {
-		return true
-	}
-
-	if isAllContainsLetterCheck(str) {
-		return true
-	}
-
-	if isAllJustContainsNumberAndLetterCheck(str) {
+	if isAllContainsNumberCheck(str) ||
+		isAllContainsLetterCheck(str) ||
+		isAllJustContainsNumberAndLetterCheck(str) {
 		return true
 	}
 
@@ -207,23 +239,27 @@ func isWeakPasswordStrength(str string) bool {
 }
 
 func isMidPasswordStrength(str string) bool {
-	if !isMinimumCheck(7, len(str)) {
+	if len(str) < 7 {
 		return false
 	}
 
-	if !isContainSymbolCheck(str) && !isContainPunctCheck(str) {
+	if !isContainSymbolCheck(str) || !isContainPunctCheck(str) {
+		fmt.Println("1. tidak ada simbol")
 		return false
 	}
 
-	if isContainNumberCheck(str) {
+	if isContainNumberCheck(str) && (isContainSymbolCheck(str) || isContainPunctCheck(str)) {
+		fmt.Println("2. number  dan simbol")
 		return true
 	}
 
-	if isContainsLetterCheck(str) {
+	if isContainsLetterCheck(str) && (isContainSymbolCheck(str) || isContainPunctCheck(str)) {
+		fmt.Println("3. huruf dan simbol")
 		return true
 	}
 
-	if isContainNumberCheck(str) && isContainsLetterCheck(str) {
+	if isContainNumberCheck(str) && isContainsLetterCheck(str) && (isContainSymbolCheck(str) || isContainPunctCheck(str)) {
+		fmt.Println("4. number dan huruf dan simbol")
 		return true
 	}
 
@@ -231,22 +267,29 @@ func isMidPasswordStrength(str string) bool {
 }
 
 func isStrongPasswordStrength(str string) bool {
-	if !isMinimumCheck(14, len(str)) {
+	if len(str) < 14 {
 		return false
 	}
 	return isMidPasswordStrength(str)
 }
 
 func CheckPassword(str string) string {
-	if isWeakPasswordStrength(str) {
-		return "lemah"
-	} else if isVeryWeakPasswordStrength(str) {
+	if isVeryWeakPasswordStrength(str) {
 		return "sangat lemah"
-	} else if isStrongPasswordStrength(str) {
+	}
+
+	if isStrongPasswordStrength(str) {
 		return "kuat"
-	} else if isMidPasswordStrength(str) {
+	}
+
+	if isMidPasswordStrength(str) {
 		return "sedang"
 	}
+	
+	if isWeakPasswordStrength(str) {
+		return "lemah"
+	}
+
 	return "tidak diketahui"
 }
 
@@ -257,8 +300,6 @@ func PasswordGenerator(base string) (string, string) {
 }
 
 func main() {
-	a, b := PasswordGenerator("admin")
-	fmt.Println(a)
-	fmt.Println(a == "NOMDe")
-	fmt.Println(b == "lemah")
+	a := Generate("Semangat Pagi 12!#")
+	fmt.Println(a == "#!21OGEpTEGNEMIs")
 }

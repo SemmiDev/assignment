@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"net/http"
 	"time"
+
+	"github.com/google/uuid"
 
 	"a21hc3NpZ25tZW50/db"
 	"a21hc3NpZ25tZW50/middleware"
@@ -68,6 +69,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		w.Write(errResponse)
 	}
 
+	db.Task[credentials.Username] = []model.Todo{}
+
 	session := model.Session{
 		Username: credentials.Username,
 		Expiry:   time.Now().Add(time.Hour * 5),
@@ -117,8 +120,6 @@ func AddToDo(w http.ResponseWriter, r *http.Request) {
 func ListToDo(w http.ResponseWriter, r *http.Request) {
 	username := fmt.Sprintf("%s", r.Context().Value("username"))
 
-	// jika task kosong, maka akan menampilkan pesan "Todolist not found!"
-	// status code 404
 	if len(db.Task) == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		successResponse, _ := model.MarshalJson(model.ErrorResponse{Error: "Todolist not found!"})
@@ -126,8 +127,6 @@ func ListToDo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// menampilkan data dari map db.Task berdasarkan username
-	// jika tidak ada data, makan cukup menampilkan status code 404
 	tasks := db.Task[username]
 	if len(tasks) == 0 {
 		w.WriteHeader(http.StatusOK)
@@ -141,7 +140,9 @@ func ListToDo(w http.ResponseWriter, r *http.Request) {
 
 func ClearToDo(w http.ResponseWriter, r *http.Request) {
 	username := fmt.Sprintf("%s", r.Context().Value("username"))
-	delete(db.Task, username)
+
+	db.Task[username] = []model.Todo{}
+
 	w.WriteHeader(http.StatusOK)
 	successResponse, _ := model.MarshalJson(model.SuccessResponse{Username: username, Message: "Clear ToDo Success"})
 	w.Write(successResponse)

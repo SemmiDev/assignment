@@ -3,69 +3,9 @@ package main
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 )
-
-/*
-input: data = ["account-0-first-John", "account-0-last-Doe", "account-1-first-Jane", "account-1-last-Doe"]
-
-output: map[account: ["John Doe", "Jane Doe"]]
-
-input: data = ["account-0-first-John", "account-0-last-Doe", "account-1-first-Jane", "account-1-last-Doe", "address-0-first-Jaksel", "address-0-last-Jakarta", "address-1-first-Bandung", "address-1-last-Jabar"]
-
-output: map[account: ["John Doe", "Jane Doe"], address: ["Jaksel Jakarta", "Bandung Jabar"]]
-
-header: account
-index : 0
-pos   :first
-value: John
-
-want map[account: ["John Doe", "Jane Doe"], address: ["Jaksel Jakarta", "Bandung Jabar"]]
-
-	grouping based on header
-		- account => [John Doe, Jane Doe]
-		- address => [Jaksel Jakarta, Bandung Jabar]
-	sorting based on index
-		- account => [John Doe, Jane Doe]
-		- address => [Jaksel Jakarta, Bandung Jabar]
-	pair first and last
-		- account => [John Doe, Jane Doe]
-		- address => [Jaksel Jakarta, Bandung Jabar]
-
-*/
-
-func (c Collections) grouping() map[string][]string {
-	// grouping based on header
-	headers := make(map[string][]Data)
-	for _, v := range c.data {
-		headers[v.Header] = append(headers[v.Header], v)
-	}
-
-	// sorting based on index
-	for _, v := range headers {
-		sort.Slice(v, func(i, j int) bool {
-			return v[i].Index < v[j].Index
-		})
-	}
-
-	/*
-		map[
-			account:[{account 0 first John}   {account 0 last Doe}     {account 1 first Jane}    {account 1 last Doe}]
-			address:[{address 0 first Jaksel} {address 0 last Jakarta} {address 1 first Bandung} {address 1 last Jabar}]
-		]
-	*/
-
-	// pair first and last
-	pairedMap := make(map[string][]string)
-	for _, v := range headers {
-		for i := 0; i < len(v); i += 2 {
-			if v[i].Position == "first" && v[i+1].Position == "last" {
-				pairedMap[v[i].Header] = append(pairedMap[v[i].Header], v[i].Value+" "+v[i+1].Value)
-			}
-		}
-	}
-	return pairedMap
-}
 
 type Data struct {
 	Header   string
@@ -96,36 +36,7 @@ func ChangeOutput(data []string) map[string][]string {
 		})
 	}
 
-	group := Group{
-		collection: collections,
-		data:       make(map[string]Data),
-	}
-
-	group.grouping()
-
-	return nil
-}
-
-type Group struct {
-	collection Collections
-
-	// key = header + index
-	// value = pos + value
-	data map[string]Data
-}
-
-func (c *Group) grouping() {
-	for _, v := range c.collection.data {
-		key := v.Header + "-" + v.Index + "-" + v.Position
-		c.data[key] = Data{
-			Header:   v.Header,
-			Index:    v.Index,
-			Position: v.Position,
-			Value:    v.Value,
-		}
-	}
-
-	fmt.Println(c.data)
+	return getByKey(collections)
 }
 
 func main() {
@@ -140,4 +51,81 @@ func main() {
 		"address-1-last-Jabar"}
 	r := ChangeOutput(data)
 	fmt.Println(r)
+}
+
+func prettyPrintWithEnter(collections Collections) {
+	for _, v := range collections.data {
+		fmt.Println(v)
+	}
+}
+
+func getByKey(collections Collections) map[string][]string {
+	datamap := make(map[string][]Data)
+	for _, v := range collections.data {
+		key := v.Header + "-" + v.Index
+		datamap[key] = append(datamap[key], v)
+	}
+
+	newmap := make(map[string][]string)
+	for k, v := range datamap {
+		combine := combineTwoOneValue(v)
+		newmap[k] = append(newmap[k], combine)
+	}
+
+	return grouping(newmap)
+}
+
+type Grouping struct {
+	Key   string
+	Index int
+	Val   string
+}
+
+func grouping(data map[string][]string) map[string][]string {
+	grouping := []Grouping{}
+	for k, v := range data {
+		key, index := strings.Split(k, "-")[0], strings.Split(k, "-")[1]
+		indexInInt, _ := strconv.Atoi(index)
+
+		group := Grouping{
+			Key:   key,
+			Index: indexInInt,
+			Val:   v[0],
+		}
+		grouping = append(grouping, group)
+	}
+
+	newg := map[string][]Grouping{}
+	for _, v := range grouping {
+		key := v.Key
+		newg[key] = append(newg[key], v)
+	}
+
+	for _, v := range newg {
+		// sort grouping in v by index
+		sort.Slice(v, func(i, j int) bool {
+			return v[i].Index < v[j].Index
+		})
+	}
+
+	newg2 := make(map[string][]string)
+	for k, v := range newg {
+		for _, v2 := range v {
+			newg2[k] = append(newg2[k], v2.Val)
+		}
+	}
+	return newg2
+}
+
+func combineTwoOneValue(data []Data) string {
+	if len(data) == 1 {
+		return data[0].Value
+	}
+	result := ""
+	if data[0].Position == "first" {
+		result = data[0].Value + " " + data[1].Value
+	} else {
+		result = data[1].Value + " " + data[0].Value
+	}
+	return result
 }
