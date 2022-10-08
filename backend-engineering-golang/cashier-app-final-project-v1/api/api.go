@@ -35,10 +35,12 @@ func NewAPI(usersRepo repo.UserRepository, sessionsRepo repo.SessionsRepository,
 		mux,
 	}
 
+	fs := http.FileServer(http.Dir("./static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	index := Page{File: "index.html"}
 	mux.Handle("/", api.Get(index))
 
-	// Please create routing for:
 	// - Register page with endpoint `/page/register`, GET method and render `register.html` file on views folder
 	mux.Handle("/page/register", api.Get(Page{File: "register.html"}))
 	// - Login page with endpoint `/page/login`, GET method and render `login.html` file on views folder

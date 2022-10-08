@@ -218,7 +218,7 @@ Berikut adalah hal-hal yang harus diperhatikan dalam mengerjakan aplikasi cashie
 ⭐ **Page styling**
 
 - Lakukan styling menggunakan css atau sejenis pada tampilan dari setiap halaman di aplikasi cashier app ini.
-- Buatlah sebagus mungkin dan sekreatif mungkin dengan bebas (tidak dibatasi).
+- Buatlah sebagus mungkin dan sekreatif mungkin dengan bebas (tidak dibataAsi).
 - Bagian ini akan diperiksa manual dan memiliki bobot penilaian **10%** dari total keseluruhan nilai.
 - Lampirkan screenshoot pada setiap halaman yang kalian styling dan simpan pada folder berikut dengan nama file image yang sama:
 
