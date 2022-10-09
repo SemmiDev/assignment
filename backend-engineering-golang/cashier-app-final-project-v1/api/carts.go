@@ -15,15 +15,14 @@ func (api *API) AddCart(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Request Product Not Found"})
+		_ = json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Request Product Not Found"})
 		return
 	}
 
-	// Check r.Form with key product, if not found then return response code 400 and message "Request Product Not Found".
 	product := r.Form.Get("product")
 	if product == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Request Product Not Found"})
+		_ = json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Request Product Not Found"})
 		return
 	}
 
@@ -46,14 +45,14 @@ func (api *API) AddCart(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Add data field Name, Cart and TotalPrice with struct model.Cart.
 	cart := model.Cart{
 		Name:       fmt.Sprintf("%s", r.Context().Value("username")),
 		Cart:       list,
 		TotalPrice: totalPrice,
 	}
 
-	api.cartsRepo.AddCart(cart)
+	_ = api.cartsRepo.AddCart(cart)
+	carts, _ := api.cartsRepo.ReadCart()
 
 	filepath := path.Join("views", "dashboard.html")
 	tmpl, err := template.ParseFiles(filepath)
@@ -66,7 +65,7 @@ func (api *API) AddCart(w http.ResponseWriter, r *http.Request) {
 	listProducts, err := api.products.ReadProducts()
 	data := model.Dashboard{
 		Product: listProducts,
-		Cart:    cart,
+		Cart:    carts,
 	}
 
 	err = tmpl.Execute(w, data)

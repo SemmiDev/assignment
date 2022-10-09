@@ -10,43 +10,64 @@ import (
 	"text/template"
 )
 
+var availablePhotoExtension = map[string]struct{}{
+	".jpg":  {},
+	".jpeg": {},
+	".png":  {},
+}
+
 func (api *API) ImgProfileView(w http.ResponseWriter, r *http.Request) {
-	// View with response image `img-avatar.png` from path `assets/images`
-	filepath := path.Join("assets", "images", "img-avatar.png")
-	http.ServeFile(w, r, filepath)
+	username := r.Context().Value("username").(string)
+
+	for ext, _ := range availablePhotoExtension {
+		fileName := username + "-photo-profile" + ext
+		profilePicNamePath := path.Join("assets", "images", fileName)
+
+		if _, err := os.Stat(profilePicNamePath); err == nil {
+			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			http.ServeFile(w, r, profilePicNamePath)
+			return
+		}
+		fileName = ""
+	}
+
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	fallback := path.Join("assets", "images", "img-avatar-default.png")
+	http.ServeFile(w, r, fallback)
+	return
 }
 
 func (api *API) ImgProfileUpdate(w http.ResponseWriter, r *http.Request) {
-	// Update image `img-avatar.png` from path `assets/images`
-	image := path.Join("assets", "images", "img-avatar.png")
+	username := r.Context().Value("username").(string)
+	profilePicNamePath := username + "-photo-profile"
 
-	// parse multipart form
-	err := r.ParseMultipartForm(32 << 20) // 32MB atau 32 ^ 20 = 32 * 1024 * 1024 = 32 * 1048576 = 33554432 byte
+	err := r.ParseMultipartForm(2 << 20) // 2 mb
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	f, _, err := r.FormFile("file-avatar")
+	file, header, err := r.FormFile("file-avatar")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(model.ErrorResponse{Error: err.Error()})
+		return
+	}
+	defer file.Close()
+
+	extension := path.Ext(header.Filename)
+	fileName := profilePicNamePath + extension
+	profilePicNamePath = path.Join("assets", "images", fileName)
+
+	f, err := os.OpenFile(profilePicNamePath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer f.Close()
 
-	// create file
-	file, err := os.OpenFile(image, os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer file.Close()
+	_, err = io.Copy(f, file)
 
-	// copy file
-	if _, err := io.Copy(file, f); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 	filepath := path.Join("views", "dashboard.html")
 	tmpl, err := template.ParseFiles(filepath)
 	if err != nil {
@@ -56,11 +77,15 @@ func (api *API) ImgProfileUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cart, err := api.cartsRepo.ReadCart()
+	cart.Name = username
 	listProducts, err := api.products.ReadProducts()
 	data := model.Dashboard{
 		Product: listProducts,
 		Cart:    cart,
 	}
+
+	// for refresh page after upload image
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 
 	err = tmpl.Execute(w, data)
 	if err != nil {

@@ -7,10 +7,12 @@ import (
 	repo "a21hc3NpZ25tZW50/repository"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -36,165 +38,165 @@ var _ = Describe("Cashier App", func() {
 		cartRepo.ResetCarts()
 	})
 
-	//Describe("Repository", func() {
-	//	Describe("Users repository", func() {
-	//		When("add user data to file users.json", func() {
-	//			It("should save data user as a list to file users.json", func() {
-	//				err := userRepo.AddUser(model.Credentials{
-	//					Username: "aditira",
-	//					Password: "12345",
-	//				})
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				listUsers, err := userRepo.ReadUser()
-	//				expectListUsers := []model.Credentials{
-	//					{Username: "aditira", Password: "12345"},
-	//				}
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//				Expect(listUsers).To(Equal(expectListUsers))
-	//
-	//				userRepo.ResetUser()
-	//				sessionRepo.ResetSessions()
-	//				cartRepo.ResetCarts()
-	//			})
-	//		})
-	//	})
-	//
-	//	Describe("Sessions repository", func() {
-	//		When("add session data to file sessions.json", func() {
-	//			It("should save data session as a list to file sessions.json", func() {
-	//				session := model.Session{
-	//					Token:    "cc03dbea-4085-47ba-86fe-020f5d01a9d8",
-	//					Username: "aditira",
-	//					Expiry:   time.Date(2022, 11, 17, 20, 34, 58, 651387237, time.UTC),
-	//				}
-	//				err := sessionRepo.AddSessions(session)
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				listSessions, err := sessionRepo.ReadSessions()
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//				token, err := sessionRepo.TokenExist(listSessions, "cc03dbea-4085-47ba-86fe-020f5d01a9d8")
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//				Expect(token).To(Equal(session))
-	//				Expect(listSessions[0]).To(Equal(session))
-	//
-	//				sessionRepo.ResetSessions()
-	//			})
-	//		})
-	//
-	//		When("delete selected session to file sessions.json", func() {
-	//			It("should delete data session target from list in file sessions.json", func() {
-	//				session := model.Session{
-	//					Token:    "cc03dbea-4085-47ba-86fe-020f5d01a9d8",
-	//					Username: "aditira",
-	//					Expiry:   time.Date(2022, 11, 17, 20, 34, 58, 651387237, time.UTC),
-	//				}
-	//				err := sessionRepo.AddSessions(session)
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				listSessions, err := sessionRepo.ReadSessions()
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				token, err := sessionRepo.TokenExist(listSessions, "cc03dbea-4085-47ba-86fe-020f5d01a9d8")
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//				Expect(token).To(Equal(session))
-	//
-	//				err = sessionRepo.DeleteSessions("cc03dbea-4085-47ba-86fe-020f5d01a9d8")
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				listSessions, err = sessionRepo.ReadSessions()
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				token, err = sessionRepo.TokenExist(listSessions, "cc03dbea-4085-47ba-86fe-020f5d01a9d8")
-	//				Expect(err).To(Equal(fmt.Errorf("Token Not Found!")))
-	//				Expect(token).To(Equal(model.Session{}))
-	//
-	//				sessionRepo.ResetSessions()
-	//			})
-	//		})
-	//
-	//		When("check expired session with exprired session is 5 hours from now", func() {
-	//			It("should return a session model with token, name, and expired time", func() {
-	//				session := model.Session{
-	//					Token:    "cc03dbea-4085-47ba-86fe-020f5d01a9d8",
-	//					Username: "aditira",
-	//					Expiry:   time.Now().Add(5 * time.Hour),
-	//				}
-	//				err := sessionRepo.AddSessions(session)
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				tokenFound, err := sessionRepo.CheckExpireToken("cc03dbea-4085-47ba-86fe-020f5d01a9d8")
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//				Expect(tokenFound.Token).To(Equal("cc03dbea-4085-47ba-86fe-020f5d01a9d8"))
-	//				Expect(tokenFound.Username).To(Equal("aditira"))
-	//
-	//				sessionRepo.ResetSessions()
-	//			})
-	//		})
-	//
-	//		When("check expired session with exprired session is 5 hours ago", func() {
-	//			It("should return error message token is expired and empty session model", func() {
-	//				session := model.Session{
-	//					Token:    "cc03dbea-4085-47ba-86fe-020f5d01a9d8",
-	//					Username: "aditira",
-	//					Expiry:   time.Now().Add(-5 * time.Hour),
-	//				}
-	//				err := sessionRepo.AddSessions(session)
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				tokenFound, err := sessionRepo.CheckExpireToken("cc03dbea-4085-47ba-86fe-020f5d01a9d8")
-	//				Expect(err).To(Equal(fmt.Errorf("Token is Expired!")))
-	//				Expect(tokenFound).To(Equal(model.Session{}))
-	//
-	//				sessionRepo.ResetSessions()
-	//			})
-	//		})
-	//	})
-	//
-	//	Describe("Product repository", func() {
-	//		When("read list data product", func() {
-	//			It("should return list product", func() {
-	//				listProduct, err := productRepo.ReadProducts()
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				expectList := []model.Product{
-	//					{Id: "1", Name: "Tea", Price: "20000", Quantity: "", Total: 0},
-	//					{Id: "2", Name: "Milk", Price: "10000", Quantity: "", Total: 0},
-	//					{Id: "3", Name: "Cofe", Price: "25000", Quantity: "", Total: 0},
-	//					{Id: "4", Name: "Apple", Price: "15000", Quantity: "", Total: 0},
-	//					{Id: "5", Name: "Bread", Price: "30000", Quantity: "", Total: 0},
-	//					{Id: "6", Name: "Cake", Price: "40000", Quantity: "", Total: 0},
-	//				}
-	//				Expect(listProduct).To(Equal(expectList))
-	//			})
-	//		})
-	//	})
-	//
-	//	Describe("Cart repository", func() {
-	//		When("add cart data to file carts.json", func() {
-	//			It("should save data cart to file carts.json", func() {
-	//				productCart := model.Cart{
-	//					Name: "aditira",
-	//					Cart: []model.Product{
-	//						{Id: "1", Name: "Tea", Price: "20000", Quantity: "1", Total: 20000},
-	//						{Id: "2", Name: "Milk", Price: "10000", Quantity: "2", Total: 20000},
-	//						{Id: "3", Name: "Cofe", Price: "25000", Quantity: "3", Total: 75000},
-	//					},
-	//					TotalPrice: 115000,
-	//				}
-	//
-	//				err := cartRepo.AddCart(productCart)
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//
-	//				expectProdCart, err := cartRepo.ReadCart()
-	//				Expect(err).ShouldNot(HaveOccurred())
-	//				Expect(productCart).To(Equal(expectProdCart))
-	//
-	//				cartRepo.ResetCarts()
-	//			})
-	//		})
-	//	})
-	//})
+	Describe("Repository", func() {
+		Describe("Users repository", func() {
+			When("add user data to file users.json", func() {
+				It("should save data user as a list to file users.json", func() {
+					err := userRepo.AddUser(model.Credentials{
+						Username: "aditira",
+						Password: "12345",
+					})
+					Expect(err).ShouldNot(HaveOccurred())
+
+					listUsers, err := userRepo.ReadUser()
+					expectListUsers := []model.Credentials{
+						{Username: "aditira", Password: "12345"},
+					}
+					Expect(err).ShouldNot(HaveOccurred())
+					Expect(listUsers).To(Equal(expectListUsers))
+
+					userRepo.ResetUser()
+					sessionRepo.ResetSessions()
+					cartRepo.ResetCarts()
+				})
+			})
+		})
+
+		Describe("Sessions repository", func() {
+			When("add session data to file sessions.json", func() {
+				It("should save data session as a list to file sessions.json", func() {
+					session := model.Session{
+						Token:    "cc03dbea-4085-47ba-86fe-020f5d01a9d8",
+						Username: "aditira",
+						Expiry:   time.Date(2022, 11, 17, 20, 34, 58, 651387237, time.UTC),
+					}
+					err := sessionRepo.AddSessions(session)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					listSessions, err := sessionRepo.ReadSessions()
+					Expect(err).ShouldNot(HaveOccurred())
+					token, err := sessionRepo.TokenExist(listSessions, "cc03dbea-4085-47ba-86fe-020f5d01a9d8")
+					Expect(err).ShouldNot(HaveOccurred())
+					Expect(token).To(Equal(session))
+					Expect(listSessions[0]).To(Equal(session))
+
+					sessionRepo.ResetSessions()
+				})
+			})
+
+			When("delete selected session to file sessions.json", func() {
+				It("should delete data session target from list in file sessions.json", func() {
+					session := model.Session{
+						Token:    "cc03dbea-4085-47ba-86fe-020f5d01a9d8",
+						Username: "aditira",
+						Expiry:   time.Date(2022, 11, 17, 20, 34, 58, 651387237, time.UTC),
+					}
+					err := sessionRepo.AddSessions(session)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					listSessions, err := sessionRepo.ReadSessions()
+					Expect(err).ShouldNot(HaveOccurred())
+
+					token, err := sessionRepo.TokenExist(listSessions, "cc03dbea-4085-47ba-86fe-020f5d01a9d8")
+					Expect(err).ShouldNot(HaveOccurred())
+					Expect(token).To(Equal(session))
+
+					err = sessionRepo.DeleteSessions("cc03dbea-4085-47ba-86fe-020f5d01a9d8")
+					Expect(err).ShouldNot(HaveOccurred())
+
+					listSessions, err = sessionRepo.ReadSessions()
+					Expect(err).ShouldNot(HaveOccurred())
+
+					token, err = sessionRepo.TokenExist(listSessions, "cc03dbea-4085-47ba-86fe-020f5d01a9d8")
+					Expect(err).To(Equal(fmt.Errorf("Token Not Found!")))
+					Expect(token).To(Equal(model.Session{}))
+
+					sessionRepo.ResetSessions()
+				})
+			})
+
+			When("check expired session with exprired session is 5 hours from now", func() {
+				It("should return a session model with token, name, and expired time", func() {
+					session := model.Session{
+						Token:    "cc03dbea-4085-47ba-86fe-020f5d01a9d8",
+						Username: "aditira",
+						Expiry:   time.Now().Add(5 * time.Hour),
+					}
+					err := sessionRepo.AddSessions(session)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					tokenFound, err := sessionRepo.CheckExpireToken("cc03dbea-4085-47ba-86fe-020f5d01a9d8")
+					Expect(err).ShouldNot(HaveOccurred())
+					Expect(tokenFound.Token).To(Equal("cc03dbea-4085-47ba-86fe-020f5d01a9d8"))
+					Expect(tokenFound.Username).To(Equal("aditira"))
+
+					sessionRepo.ResetSessions()
+				})
+			})
+
+			When("check expired session with exprired session is 5 hours ago", func() {
+				It("should return error message token is expired and empty session model", func() {
+					session := model.Session{
+						Token:    "cc03dbea-4085-47ba-86fe-020f5d01a9d8",
+						Username: "aditira",
+						Expiry:   time.Now().Add(-5 * time.Hour),
+					}
+					err := sessionRepo.AddSessions(session)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					tokenFound, err := sessionRepo.CheckExpireToken("cc03dbea-4085-47ba-86fe-020f5d01a9d8")
+					Expect(err).To(Equal(fmt.Errorf("Token is Expired!")))
+					Expect(tokenFound).To(Equal(model.Session{}))
+
+					sessionRepo.ResetSessions()
+				})
+			})
+		})
+
+		Describe("Product repository", func() {
+			When("read list data product", func() {
+				It("should return list product", func() {
+					listProduct, err := productRepo.ReadProducts()
+					Expect(err).ShouldNot(HaveOccurred())
+
+					expectList := []model.Product{
+						{Id: "1", Name: "Tea", Price: "20000", Quantity: "", Total: 0},
+						{Id: "2", Name: "Milk", Price: "10000", Quantity: "", Total: 0},
+						{Id: "3", Name: "Cofe", Price: "25000", Quantity: "", Total: 0},
+						{Id: "4", Name: "Apple", Price: "15000", Quantity: "", Total: 0},
+						{Id: "5", Name: "Bread", Price: "30000", Quantity: "", Total: 0},
+						{Id: "6", Name: "Cake", Price: "40000", Quantity: "", Total: 0},
+					}
+					Expect(listProduct).To(Equal(expectList))
+				})
+			})
+		})
+
+		Describe("Cart repository", func() {
+			When("add cart data to file carts.json", func() {
+				It("should save data cart to file carts.json", func() {
+					productCart := model.Cart{
+						Name: "aditira",
+						Cart: []model.Product{
+							{Id: "1", Name: "Tea", Price: "20000", Quantity: "1", Total: 20000},
+							{Id: "2", Name: "Milk", Price: "10000", Quantity: "2", Total: 20000},
+							{Id: "3", Name: "Cofe", Price: "25000", Quantity: "3", Total: 75000},
+						},
+						TotalPrice: 115000,
+					}
+
+					err := cartRepo.AddCart(productCart)
+					Expect(err).ShouldNot(HaveOccurred())
+
+					expectProdCart, err := cartRepo.ReadCart()
+					Expect(err).ShouldNot(HaveOccurred())
+					Expect(productCart).To(Equal(expectProdCart))
+
+					cartRepo.ResetCarts()
+				})
+			})
+		})
+	})
 
 	Describe("API", func() {
 		Describe("/page/register", func() {

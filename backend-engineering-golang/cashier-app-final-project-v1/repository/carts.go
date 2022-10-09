@@ -42,12 +42,6 @@ func (u *CartRepository) AddCart(cart model.Cart) error {
 		return err
 	}
 
-	if string(jsonData) == "" {
-		// add {} to json data
-		curly := []byte("{}")
-		jsonData = curly
-	}
-
 	err = json.Unmarshal(jsonData, &carts)
 	if err != nil {
 		return err
@@ -67,7 +61,7 @@ func (u *CartRepository) AddCart(cart model.Cart) error {
 }
 
 func (u *CartRepository) ResetCarts() error {
-	err := u.db.Reset("carts", []byte(""))
+	err := u.db.Reset("carts", []byte("{}"))
 	if err != nil {
 		return err
 	}

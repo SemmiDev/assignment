@@ -11,8 +11,6 @@ import (
 )
 
 func (api *API) Register(w http.ResponseWriter, r *http.Request) {
-	// Read username and password request with FormValue.
-	// parse form r.Form
 	err := r.ParseForm()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -59,37 +57,35 @@ func (api *API) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) Login(w http.ResponseWriter, r *http.Request) {
-	// Read usernmae and password request with FormValue.
-	// Read username and password request with FormValue.
-	// parse form r.Form
 	err := r.ParseForm()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Internal Server Error"})
+		_ = json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
+
 	username := r.Form.Get("username")
 	password := r.Form.Get("password")
 
-	creds := model.Credentials{
+	creeds := model.Credentials{
 		Username: username,
 		Password: password,
 	}
 
-	if creds.Username == "" || creds.Password == "" {
+	if creeds.Username == "" || creeds.Password == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Username or Password empty"})
+		_ = json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Username or Password empty"})
 		return
 	}
 
 	listUser, err := api.usersRepo.ReadUser()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Internal Server Error"})
+		_ = json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
 
-	if !api.usersRepo.LoginValid(listUser, creds) {
+	if !api.usersRepo.LoginValid(listUser, creeds) {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(model.ErrorResponse{Error: "Wrong User or Password!"})
 		return
@@ -97,7 +93,7 @@ func (api *API) Login(w http.ResponseWriter, r *http.Request) {
 
 	// Generate Cookie with Name "session_token", Path "/", Value "uuid generated with github.com/google/uuid", Expires time to 5 Hour.
 	sessionKey := uuid.New().String()
-	expiry := time.Now().Add(time.Hour * 5)
+	expiry := time.Now().Local().Add(time.Hour * 5)
 
 	cookie := http.Cookie{
 		Path:    "/",
@@ -109,7 +105,7 @@ func (api *API) Login(w http.ResponseWriter, r *http.Request) {
 
 	session := model.Session{
 		Token:    sessionKey,
-		Username: creds.Username,
+		Username: creeds.Username,
 		Expiry:   expiry,
 	}
 	err = api.sessionsRepo.AddSessions(session)
@@ -122,14 +118,15 @@ func (api *API) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	listProducts, err := api.products.ReadProducts()
+	products, _ := api.products.ReadProducts()
+	carts, _ := api.cartsRepo.ReadCart()
+
+	// sesuiai yg login
+	carts.Name = creeds.Username
+
 	data := model.Dashboard{
-		Product: listProducts,
-		Cart: model.Cart{
-			Name:       creds.Username,
-			Cart:       []model.Product{},
-			TotalPrice: 0,
-		},
+		Product: products,
+		Cart:    carts,
 	}
 
 	err = tmpl.Execute(w, data)
@@ -140,7 +137,6 @@ func (api *API) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) Logout(w http.ResponseWriter, r *http.Request) {
-	//Read session_token and get Value:
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -151,13 +147,13 @@ func (api *API) Logout(w http.ResponseWriter, r *http.Request) {
 
 	api.sessionsRepo.DeleteSessions(sessionToken)
 
-	//Set Cookie name session_token value to empty and set expires time to Now:
 	cookie = &http.Cookie{
 		Path:    "/",
 		Name:    "session_token",
 		Value:   "",
 		Expires: time.Now(),
 	}
+	http.SetCookie(w, cookie)
 
 	filepath := path.Join("views", "login.html")
 	tmpl, err := template.ParseFiles(filepath)

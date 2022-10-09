@@ -6,9 +6,8 @@ import (
 	repo "a21hc3NpZ25tZW50/repository"
 )
 
-// gunakan untuk melakukan debug
 func main() {
-	db := &db.JsonDB{}
+	db := db.NewJsonDB()
 	usersRepo := repo.NewUserRepository(db)
 	sessionsRepo := repo.NewSessionsRepository(db)
 	productsRepo := repo.NewProductRepository(db)

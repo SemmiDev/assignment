@@ -12,7 +12,7 @@ func (api *API) Auth(next http.Handler) http.Handler {
 		session, err := r.Cookie("session_token")
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(model.ErrorResponse{Error: err.Error()})
+			_ = json.NewEncoder(w).Encode(model.ErrorResponse{Error: err.Error()})
 			return
 		}
 
@@ -21,7 +21,7 @@ func (api *API) Auth(next http.Handler) http.Handler {
 		sessionFound, err := api.sessionsRepo.CheckExpireToken(sessionToken)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(model.ErrorResponse{Error: err.Error()})
+			_ = json.NewEncoder(w).Encode(model.ErrorResponse{Error: err.Error()})
 			return
 		}
 

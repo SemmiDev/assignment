@@ -1,7 +1,7 @@
 package db
 
 import (
-	"io/ioutil"
+	"os"
 )
 
 type JsonDB struct{}
@@ -11,23 +11,17 @@ func NewJsonDB() *JsonDB {
 }
 
 func (db *JsonDB) Load(dbName DBName) ([]byte, error) {
-	jsonData, err := ioutil.ReadFile("data/" + dbName + ".json")
-	if err != nil {
-		return nil, err
-	}
-	return jsonData, nil
+	jsonData, err := os.ReadFile("data/" + dbName + ".json")
+	return jsonData, err
 }
 
 func (db *JsonDB) Save(dbName DBName, data Data) error {
-	err := ioutil.WriteFile("data/"+dbName+".json", data, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
+	err := os.WriteFile("data/"+dbName+".json", data, 0644)
+	return err
 }
 
 func (db *JsonDB) Reset(fileDb string, defVal []byte) error {
-	err := ioutil.WriteFile("data/"+fileDb+".json", defVal, 0644)
+	err := os.WriteFile("data/"+fileDb+".json", defVal, 0644)
 	if err != nil {
 		return err
 	}
