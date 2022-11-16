@@ -1,0 +1,13 @@
+{ID: 2, Fullname: "Jane Doe", Class: "1A", AverageScore: 85},
+{ID: 6,Fullname: "Jane Abrams",Class: "1B",AverageScore: 85},
+{ID: 1, Fullname: "John Doe", Class: "1A", AverageScore: 80},
+{ID: 5,Fullname: "John Bernard",Class: "1B",AverageScore: 80},
+{ID: 4,Fullname: "Jane White",Class: "1B",AverageScore: 77},
+
+
+
+{ID: 2, Fullname: "Jane Doe", Class: "1A", AverageScore: 85},
+{ID: 6, Fullname: "Jane Abrams",Class: "1B",AverageScore: 85},
+{ID: 5,Fullname: "John Bernard",Class: "1B",AverageScore: 80},
+{ID: 1, Fullname: "John Doe", Class: "1A", AverageScore: 80},
+{ID: 4,Fullname: "Jane White",Class: "1B",AverageScore: 77}

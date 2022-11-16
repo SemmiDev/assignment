@@ -27,6 +27,40 @@ func Date(y int, m int, d int) time.Time {
 	return time.Date(y, month, d, 0, 0, 0, 0, time.UTC)
 }
 
+// intinya pertam kita ambil jarak dari tanggal
+// contohnya: 25 January - 30 January 2021
+// total = 5 hari
+// atau: 25 February - 10 March 2020
+// (25 feb - 29 feb) = 5
+// (1 march - 10 march) = 10
+// total = 15 hari  (krna 2021 tahun kabisat)
+// fungsi dibawah ini kebanyakan cuman split2 aja, krna kita mau ekstrak data dari tanggal dengan format yg udh diberikan ke tanggal yg di support golang
+// int(to.Sub(from).Hours() / 24) tu maksudnya:
+// to.Sub(from).Hours() tu ngurangin hari dari tanggal `to` sampe `from`, trus ambil total jam nya. trus / 24 tuk dapetin total harinya (krna 1 hari 24 jam)
+// nah kalo dah dapat total harinya,
+// panggil deh fungsi GetSalary
+// bkin map tuk nampung nama karyawan dan total gaji nya nnti
+// trus data di slice nya di loop, masukin deh dlem map, dan value nya isi dengan += 50_000, krna gajinya 50 rb perhari
+// trus gaji yg didapat dlem map format deh jadi Rp. bla bla
+// trus return deh map salary yg udah diformat Rp. itu
+
+/*
+	transformasi data:
+	tanggal = 25 January - 30 January 2021
+	data = [][]string{
+		{"Andi", "Imam", "Eddy", "Deny"}, // hari 1
+		{"Imam", "Eddy"}, // hari 2
+		{"Deny"} // hari 3
+	}
+
+	- itung total hari = 6 hari
+	- bikin map hasil = make(map[string]int)
+	- loop data dengan limit smpe total harinya
+	- masukin deh nama nya dalam map, dan valuenya +50.000 ->  hasil[namaKaryawan] += 50000
+	- kalo udah, loop lagi map nya trus format setiap valuenya dengan format Rupiah
+	- hasil2[namaKaryawan] = formatToRp(value nya)
+	- return deh
+*/
 func GetDayDifference(date string) int {
 	splittedDate := strings.Split(date, "-")
 	getYear := strings.Split(splittedDate[1], " ")[3]
@@ -54,17 +88,6 @@ func GetDayDifference(date string) int {
 	}
 
 	return int(to.Sub(from).Hours()/24) + 1
-}
-
-func IsLeapYear(year string) bool {
-	yearInt, _ := time.Parse("2006", year)
-	if yearInt.Year()%4 == 0 {
-		if yearInt.Year()%100 == 0 {
-			return yearInt.Year()%400 == 0
-		}
-		return true
-	}
-	return false
 }
 
 func GetSalary(rangeDay int, data [][]string) map[string]string {

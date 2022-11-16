@@ -18,7 +18,7 @@ func GetPredicate(math, science, english, indonesia int) string {
 	case avg < 60:
 		return "Sangat kurang"
 	default:
-		return "Nilai tidak valid"
+		return ""
 	}
 }
 

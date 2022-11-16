@@ -9,9 +9,9 @@ import (
 )
 
 var _ = Describe("RecordInvoice", func() {
-	//Describe("Marketing", invoice.MarketingTestCase)
+	Describe("Marketing", invoice.MarketingTestCase)
 	Describe("Finance", invoice.FinanceTestCase)
-	//Describe("Warehouse", invoice.WarehouseTestCase)
+	Describe("Warehouse", invoice.WarehouseTestCase)
 })
 
 var _ = Describe("RecapDataInvoice", func() {

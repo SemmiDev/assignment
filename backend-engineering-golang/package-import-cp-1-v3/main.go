@@ -24,6 +24,16 @@ func AdvanceCalculator(calculate string) float32 {
 		3 * 4  / 2  + 10  - 5 = length 9
 		  1 2 [3] 4 [5] 6 [7] 8
 
+		  1 + 2 - 3 + 4 * 5
+		  base = 1
+
+		  loop dari angka index ke 1 sampai length - 1
+		  ambil nih mula2 index ke 1
+		  otomatis dia operator
+		  ambil index ke 2
+		  otomatis dia angka
+
+
 	*/
 
 	calc := internal.NewCalculator(float32(numFloat))

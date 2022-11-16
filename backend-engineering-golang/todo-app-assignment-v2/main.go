@@ -42,6 +42,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
+	// decode credentials
+	// validasi username & password, kosong atau ngga
+	// cek di db ada gak data dengan username (already exists)
+	// cek apakah password nya sama dengan yg di db
+	//   bikin session
+	// masukin sessui nya ke db
+	// masukin session nya ke cookie
+	// login success
+
 	var credentials model.Credentials
 	err := json.NewDecoder(r.Body).Decode(&credentials)
 	if err != nil {
@@ -79,12 +88,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	sessionKey := uuid.New().String()
 	db.Sessions[sessionKey] = session
 
-	cookie := http.Cookie{
+	http.SetCookie(w, &http.Cookie{
 		Name:    "session_token",
 		Value:   sessionKey,
 		Expires: session.Expiry,
-	}
-	http.SetCookie(w, &cookie)
+	})
 
 	w.WriteHeader(http.StatusOK)
 	successResponse, _ := model.MarshalJson(model.SuccessResponse{Username: credentials.Username, Message: "Login Success"})
@@ -92,6 +100,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddToDo(w http.ResponseWriter, r *http.Request) {
+	// ambilusername
+	username := r.Context().Value("username").(string)
+	// username := fmt.Sprintf("%s", r.Context().Value("username"))
+
+	// decode req
 	var todo model.Todo
 	err := json.NewDecoder(r.Body).Decode(&todo)
 	if err != nil {
@@ -101,15 +114,8 @@ func AddToDo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if todo.Task == "" {
-		errResponse, _ := model.MarshalJson(model.ErrorResponse{Error: "Name empty"})
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(errResponse)
-	}
-
-	username := fmt.Sprintf("%s", r.Context().Value("username"))
-	todo.Id = uuid.New().String()
-	db.Task[username] = append(db.Task[username], todo)
+	todo.Id = uuid.New().String()                       // genreate id
+	db.Task[username] = append(db.Task[username], todo) // add to task db
 
 	w.WriteHeader(http.StatusOK)
 	msg := fmt.Sprintf("Task %s added!", todo.Task)
@@ -122,12 +128,13 @@ func ListToDo(w http.ResponseWriter, r *http.Request) {
 
 	if len(db.Task) == 0 {
 		w.WriteHeader(http.StatusNotFound)
-		successResponse, _ := model.MarshalJson(model.ErrorResponse{Error: "Todolist not found!"})
+		successResponse, _ := json.Marshal(model.ErrorResponse{Error: "Todolist not found!"})
+		// successResponse, _ := model.MarshalJson(model.ErrorResponse{Error: "Todolist not found!"})
 		w.Write(successResponse)
 		return
 	}
 
-	tasks := db.Task[username]
+	tasks := db.Task[username] // khusus task list with username nya kosong
 	if len(tasks) == 0 {
 		w.WriteHeader(http.StatusOK)
 		return
@@ -149,7 +156,7 @@ func ClearToDo(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	username := fmt.Sprintf("%s", r.Context().Value("username"))
+	username := r.Context().Value("username").(string)
 	delete(db.Sessions, username)
 
 	w.WriteHeader(http.StatusOK)
@@ -169,16 +176,13 @@ type API struct {
 func NewAPI() API {
 	mux := http.NewServeMux()
 	api := API{mux}
-
 	mux.Handle("/user/register", middleware.Post(http.HandlerFunc(Register)))
 	mux.Handle("/user/login", middleware.Post(http.HandlerFunc(Login)))
 	mux.Handle("/user/logout", middleware.Get(middleware.Auth(http.HandlerFunc(Logout))))
-
 	mux.Handle("/todo/create", middleware.Post(middleware.Auth(http.HandlerFunc(AddToDo))))
 	mux.Handle("/todo/read", middleware.Get(middleware.Auth(http.HandlerFunc(ListToDo))))
 	mux.Handle("/todo/clear", middleware.Delete(middleware.Auth(http.HandlerFunc(ClearToDo))))
 	mux.Handle("/todo/reset", http.HandlerFunc(ResetToDo))
-
 	return api
 }
 

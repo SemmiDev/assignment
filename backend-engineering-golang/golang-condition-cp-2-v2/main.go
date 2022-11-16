@@ -3,15 +3,14 @@ package main
 import "fmt"
 
 func BMICalculator(gender string, height int) float64 {
-	var result float64
+	result := float64(height - 100)
 
 	if gender == "laki-laki" {
-		result = float64(height - 100)
-		result = result - (result * 10 / 100)
-		return result
+		result = result - (result * 0.1)
+	} else {
+		result = result - (result * 0.15)
 	}
-	result = float64(height - 100)
-	result = result - (result * 15 / 100)
+
 	return result
 }
 

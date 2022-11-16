@@ -3,41 +3,27 @@ package main
 import "fmt"
 
 func GetTicketPrice(VIP, regular, student, day int) float32 {
-	// jumlahin total tiketnya
 	jumlahTicket := VIP + regular + student
+	totalHargaTicket := float32((VIP * 30) + (regular * 20) + (student * 10))
 
-	// kaliin dengan harga masing-masing tiket, kemudian jumlahkan
-	totalHargaTicket := (VIP * 30) + (regular * 20) + (student * 10)
+	totalBayar := totalHargaTicket // default value if totalHargaTicket < 100
 
-	// siapin variable total bayar
-	var totalBayar float32
-
-	// cek jika total harga nya lebih besar atau sama dengan 100
 	if totalHargaTicket >= 100 {
-		// cek untuk hari ganjil
-		if day%2 != 0 {
-			// cek jumlah tiket
+		switch {
+		case day%2 != 0:
 			if jumlahTicket < 5 {
-				totalBayar = float32(totalHargaTicket) - (float32(totalHargaTicket) * 0.15) // 15%
+				totalBayar = totalHargaTicket - (totalHargaTicket * 0.15) // 15%
 			} else {
-				totalBayar = float32(totalHargaTicket) - (float32(totalHargaTicket) * 0.25) // 25%
+				totalBayar = totalHargaTicket - (totalHargaTicket * 0.25) // 25%
+			}
+		case day%2 == 0:
+			if jumlahTicket < 5 {
+				totalBayar = totalHargaTicket - (totalHargaTicket * 0.1) // 10%
+			} else {
+				totalBayar = totalHargaTicket - (totalHargaTicket * 0.2) // 20%
 			}
 		}
-
-		// cek untuk hari genap
-		if day%2 == 0 {
-			// cek jumlah tiket
-			if jumlahTicket < 5 {
-				totalBayar = float32(totalHargaTicket) - (float32(totalHargaTicket) * 0.1) // 10%
-			} else {
-				totalBayar = float32(totalHargaTicket) - (float32(totalHargaTicket) * 0.2) // 20%
-			}
-		}
-	} else {
-		// kalau < 100 ga dpet diskon
-		totalBayar = float32(totalHargaTicket)
 	}
-
 	return totalBayar
 }
 

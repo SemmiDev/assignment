@@ -6,11 +6,10 @@ import (
 )
 
 func EmailInfo(email string) string {
-	info := strings.Split(email, "@")[1]
-	info2 := strings.Split(info, ".")
-	info3 := strings.Join(info2[1:], ".")
+	domain := strings.Split(strings.Split(email, "@")[1], ".")
+	tld := strings.Join(domain[1:], ".")
 
-	return fmt.Sprintf("Domain: %s dan TLD: %s", info2[0], info3)
+	return fmt.Sprintf("Domain: %s dan TLD: %s", domain[0], tld)
 }
 
 // gunakan untuk melakukan debug

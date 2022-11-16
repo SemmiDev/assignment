@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+
 type Data struct {
 	Header   string
 	Index    string
@@ -53,11 +54,14 @@ func main() {
 	fmt.Println(r)
 }
 
-func prettyPrintWithEnter(collections Collections) {
-	for _, v := range collections.data {
-		fmt.Println(v)
-	}
-}
+
+/*
+	- Sam bikin struct yg punya field Header, Index, Position, dan Value
+	- sam bikin struct yg punya field slice of struct yg di atas
+	- Sam split slice data yg di input ke struct yg di atas
+	- Sam bikin map yang ngeloop si collection of struct diatas, trus sam bkin key (header-index) dan value nya struct yg di atas
+	-
+*/
 
 func getByKey(collections Collections) map[string][]string {
 	datamap := make(map[string][]Data)
@@ -102,7 +106,6 @@ func grouping(data map[string][]string) map[string][]string {
 	}
 
 	for _, v := range newg {
-		// sort grouping in v by index
 		sort.Slice(v, func(i, j int) bool {
 			return v[i].Index < v[j].Index
 		})

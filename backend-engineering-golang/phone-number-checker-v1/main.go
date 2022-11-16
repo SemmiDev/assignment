@@ -1,30 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
 
-func isPhoneNumberValid(number *string) bool {
-	numberWithCountryCode := strings.HasPrefix(*number, "628")
-	numberWithoutCountryCode := strings.HasPrefix(*number, "08")
-
-	if numberWithCountryCode {
+func isPhoneNumberWithCountryCodeValid(number *string) bool {
+	if strings.HasPrefix(*number, "628") {
 		if len(*number) >= 11 {
 			*number = (*number)[3:]
 			return true
 		}
 	}
+	return false
+}
 
-	if numberWithoutCountryCode {
-		if len(*number) >= 10 {
+func isPhoneNumberWithoutCountryCodeValid(number *string) bool {
+	if strings.HasPrefix(*number, "08") {
+		if len(*number) >= 11 {
 			*number = (*number)[2:]
 			return true
 		}
 	}
-
 	return false
+}
+
+func validatePhoneNumber(number *string) bool {
+	return isPhoneNumberWithCountryCodeValid(number) || isPhoneNumberWithoutCountryCodeValid(number)
 }
 
 func checkProvider(number *string) string {
@@ -48,18 +50,8 @@ func checkProvider(number *string) string {
 }
 
 func PhoneNumberChecker(number string, result *string) {
-	if !isPhoneNumberValid(&number) {
-		*result = "invalid"
-		return
+	*result = "invalid"
+	if validatePhoneNumber(&number) {
+		*result = checkProvider(&number)
 	}
-	*result = checkProvider(&number)
-}
-
-func main() {
-	// bisa digunakan untuk pengujian test case
-	var number = "0881111111111111111111111111111111"
-	var result string
-
-	PhoneNumberChecker(number, &result)
-	fmt.Println(result)
 }

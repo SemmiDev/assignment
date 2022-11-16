@@ -6,11 +6,11 @@ func TicketPlayground(height, age int) int {
 	switch {
 	case age > 12:
 		return 100_000
-	case age >= 12 || height > 160:
+	case age == 12 || height > 160:
 		return 60_000
-	case (age >= 10) && (age <= 11) || height > 150:
+	case (age >= 10 && age <= 11) || height > 150:
 		return 40_000
-	case (age >= 8) && (age <= 9) || height > 135:
+	case (age >= 8 && age <= 9) || height > 135:
 		return 25_000
 	case (age >= 5 && age <= 7) || height > 120:
 		return 15_000

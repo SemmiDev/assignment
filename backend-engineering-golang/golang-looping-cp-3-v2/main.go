@@ -2,11 +2,21 @@ package main
 
 import "fmt"
 
+var cadelListCharacters = map[rune]struct{}{
+	'R': {},
+	'r': {},
+	'S': {},
+	's': {},
+	'T': {},
+	't': {},
+	'Z': {},
+	'z': {},
+}
+
 func CountingLetter(text string) int {
-	counter := 0
+	var counter int
 	for _, v := range text {
-		switch v {
-		case 'R', 'S', 'T', 'Z', 'r', 's', 't', 'z':
+		if _, ok := cadelListCharacters[v]; ok {
 			counter++
 		}
 	}

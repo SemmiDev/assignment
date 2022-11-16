@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"strings"
 	"fmt"
 	tld "github.com/jpillora/go-tld"
 )
@@ -10,6 +11,12 @@ var mappedDomainToIDNTLD = map[string]string{
 	".com": ".co.id",
 	".org": ".org.id",
 	".gov": ".go.id",
+}
+
+var IDNDomain = map[string]string{
+	"com": ".co.id",
+	"org": ".org.id",
+	"gov": ".go.id",
 }
 
 type RowData struct {
@@ -24,49 +31,76 @@ type RowData struct {
 func ProcessGetTLD(website RowData, ch chan RowData, chErr chan error) {
 	if website.Domain == "" {
 		chErr <- errors.New("domain name is empty")
-		return
 	}
-
 	if !website.Valid {
 		chErr <- errors.New("domain not valid")
-		return
 	}
-
 	if website.RefIPs < 0 {
 		chErr <- errors.New("domain RefIPs not valid")
-		return
 	}
 
-	prefix := "https://" + website.Domain
-	parser, err := tld.Parse(prefix)
-	if err != nil {
-		chErr <- err
-		return
-	}
+	split := strings.Split(website.Domain, ".")
+	domainSplit := strings.Join(split[1:], ".")
 
-	tld := "." + parser.TLD
-	website.TLD = tld
-	website.IDN_TLD = tld
-
-	if idnTLD, ok := mappedDomainToIDNTLD[tld]; ok {
-		website.IDN_TLD = idnTLD
+	if exist, ok := IDNDomain[domainSplit]; ok {
+		website.TLD = "." + domainSplit
+		website.IDN_TLD = exist
+	} else {
+		website.TLD = "." + domainSplit
+		website.IDN_TLD = domainSplit
 	}
 
 	ch <- website
 }
 
-// Gunakan variable ini sebagai goroutine di fungsi FilterAndGetDomain
+// func ProcessGetTLD(website RowData, ch chan RowData, chErr chan error) {
+// 	if website.Domain == "" {
+// 		chErr <- errors.New("domain name is empty")
+// 		return
+// 	}
+
+// 	if !website.Valid {
+// 		chErr <- errors.New("domain not valid")
+// 		return
+// 	}
+
+// 	if website.RefIPs < 0 {
+// 		chErr <- errors.New("domain RefIPs not valid")
+// 		return
+// 	}
+
+// 	prefix := "https://" + website.Domain
+// 	parser, err := tld.Parse(prefix)
+// 	if err != nil {
+// 		chErr <- err
+// 		return
+// 	}
+
+// 	tld := "." + parser.TLD
+// 	website.TLD = tld
+// 	website.IDN_TLD = tld
+
+// 	if idnTLD, ok := mappedDomainToIDNTLD[tld]; ok {
+// 		website.IDN_TLD = idnTLD
+// 	}
+
+// 	ch <- website
+// }
+
 var FuncProcessGetTLD = ProcessGetTLD
 
 func FilterAndFillData(TLD string, data []RowData) ([]RowData, error) {
-	ch := make(chan RowData, len(data))
-	errCh := make(chan error)
+	ch := make(chan RowData, len(data)) // buffered channel = [,,, len(data)]
+	errCh := make(chan error) // unbuffer = 0
+
 
 	for _, website := range data {
 		go FuncProcessGetTLD(website, ch, errCh)
 	}
 
+
 	var result []RowData
+	
 	for i := 0; i < len(data); i++ {
 		select {
 		case website := <-ch:
@@ -81,8 +115,8 @@ func FilterAndFillData(TLD string, data []RowData) ([]RowData, error) {
 	return result, nil
 }
 
-// gunakan untuk melakukan debugging
 func main() {
+	// fck wkwkw
 	parser, err := tld.Parse("https://google.co.id")
 	fmt.Println(err)
 	fmt.Println(parser.Domain)

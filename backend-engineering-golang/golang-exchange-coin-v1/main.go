@@ -8,6 +8,7 @@ func loop(count int, value int, result *[]int) {
 	}
 }
 
+
 func ExchangeCoin(amount int) []int {
 	banknotes := []int{1000, 500, 200, 100, 50, 20, 10, 5, 1}
 	result := make([]int, 0, len(banknotes))

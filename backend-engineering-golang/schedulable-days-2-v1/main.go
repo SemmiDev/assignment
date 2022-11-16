@@ -13,13 +13,23 @@ func SchedulableDays(villager [][]int) []int {
 		return villager[0]
 	}
 
+	/*
+	[[7, 12, 19, 22],
+	[12, 19, 21, 23],
+	[7, 12, 19], [12, 19]]
+	[7, 12, 19, 22]
+	*/
+	// 7 = 1
+	// 12 = 4
+	// 19 = 1
+	// 22 = 1
 	for _, v := range villager {
 		for _, v2 := range v {
 			maps[v2]++
 		}
 	}
 
-	villagerLen := len(villager)
+	villagerLen := len(villager) // banyak warga = 4 warga
 	for k, v := range maps {
 		if v == villagerLen {
 			result = append(result, k)

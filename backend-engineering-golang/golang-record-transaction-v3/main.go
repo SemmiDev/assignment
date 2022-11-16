@@ -36,13 +36,23 @@ func sortTransactionsByDay(transactions []Transaction) []Transaction {
 	return transactions
 }
 
+/*
+
+	- grouping hari yg sama
+*/
+
 func GroupingSameDay(transaction []Transaction) []Transaction {
 	sameDay := map[string]int{}
+	/*
+		key = 01/01/2021-income
+	*/
 	for _, v := range transaction {
 		key := generateKey(v.Date, v.Type)
 		sameDay[key] += v.Amount
 	}
+
 	sameDay = Accumulate(sameDay)
+
 	data := make([]Transaction, 0, len(sameDay))
 	for k, v := range sameDay {
 		date, transactionType := resolveKey(k)

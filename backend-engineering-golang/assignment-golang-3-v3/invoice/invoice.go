@@ -1,5 +1,10 @@
 package invoice
 
+import (
+	"strconv"
+	"strings"
+)
+
 type InvoiceData struct {
 	Date         string // "DD-month-YYYY" (contoh: "01-January-2022")
 	TotalInvoice float64
@@ -35,6 +40,14 @@ func generateKey(date string, department DepartmentName) string {
 	return date + "#" + department.ToString()
 }
 
+func ChangeDate(date string) string {
+	var arrMonth = []string{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}
+	splDate := strings.Split(date, "/")
+	month, _ := strconv.Atoi(splDate[1])
+	month = month - 1
+	return splDate[0] + "-" + arrMonth[month] + "-" + splDate[2]
+}
+
 func updateInvoicesData(invoicesData *[]InvoiceData, keyData string, data InvoiceData) {
 	for i, invoiceData := range *invoicesData {
 		key := generateKey(invoiceData.Date, invoiceData.Departemen)
@@ -52,6 +65,7 @@ func RecapDataInvoice(invoices []Invoice) ([]InvoiceData, error) {
 		switch invoice.(type) {
 		case FinanceInvoice:
 			financeInvoiceData, _ := invoice.(FinanceInvoice)
+
 			if financeInvoiceData.Status == PAID && financeInvoiceData.Approved {
 				financeRecordInvoice, err := financeInvoiceData.RecordInvoice()
 				if err != nil {
@@ -75,6 +89,7 @@ func RecapDataInvoice(invoices []Invoice) ([]InvoiceData, error) {
 					invoiceData = append(invoiceData, financeRecordInvoice)
 				}
 			}
+
 		case MarketingInvoice:
 			marketingInvoiceData, _ := invoice.(MarketingInvoice)
 			if marketingInvoiceData.Approved {

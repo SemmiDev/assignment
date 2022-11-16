@@ -8,7 +8,7 @@ import (
 
 func MethodGet(r *http.Request) error {
 	if r.Method != http.MethodGet {
-		return fmt.Errorf("Method not allowed")
+		return fmt.Errorf("Method not al
 	}
 	return nil
 }

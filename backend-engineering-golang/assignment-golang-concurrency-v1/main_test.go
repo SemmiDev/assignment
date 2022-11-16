@@ -215,116 +215,116 @@ var testData = []main.RowData{
 	{RankWebsite: 100, Domain: "imdb.com", Valid: true, RefIPs: 211304},
 }
 
-var _ = Describe("FilterAndGetDomain", func() {
-	ReportAfterEach(func(report SpecReport) {
-		if report.RunTime > (time.Millisecond * 300) {
-			AbortSuite("Timeout")
-		}
-	})
+// var _ = Describe("FilterAndGetDomain", func() {
+// 	ReportAfterEach(func(report SpecReport) {
+// 		if report.RunTime > (time.Millisecond * 300) {
+// 			AbortSuite("Timeout")
+// 		}
+// 	})
 
-	Context("error cases", func() {
-		When("one of list data have empty domain", func() {
-			It("should return error with message 'domain name is empty'", func() {
-				var test = make([]main.RowData, len(testData))
-				copy(test, testData)
+// 	Context("error cases", func() {
+// 		When("one of list data have empty domain", func() {
+// 			It("should return error with message 'domain name is empty'", func() {
+// 				var test = make([]main.RowData, len(testData))
+// 				copy(test, testData)
 
-				test[30].Domain = ""
+// 				test[30].Domain = ""
 
-				_, err := main.FilterAndFillData(".com", test)
+// 				_, err := main.FilterAndFillData(".com", test)
 
-				Expect(err).ToNot(BeNil())
-				Expect(err).To(MatchError("domain name is empty"))
-				Expect(err.Error()).To(Equal("domain name is empty"))
-			})
-		})
+// 				Expect(err).ToNot(BeNil())
+// 				Expect(err).To(MatchError("domain name is empty"))
+// 				Expect(err.Error()).To(Equal("domain name is empty"))
+// 			})
+// 		})
 
-		When("one of list data have valid is false", func() {
-			It("should return error with message 'domain not valid'", func() {
-				var test = make([]main.RowData, len(testData))
-				copy(test, testData)
-				test[20].Valid = false
+// 		When("one of list data have valid is false", func() {
+// 			It("should return error with message 'domain not valid'", func() {
+// 				var test = make([]main.RowData, len(testData))
+// 				copy(test, testData)
+// 				test[20].Valid = false
 
-				_, err := main.FilterAndFillData(".com", test)
+// 				_, err := main.FilterAndFillData(".com", test)
 
-				Expect(err).ToNot(BeNil())
-				Expect(err).To(MatchError("domain not valid"))
-				Expect(err.Error()).To(Equal("domain not valid"))
-			})
-		})
+// 				Expect(err).ToNot(BeNil())
+// 				Expect(err).To(MatchError("domain not valid"))
+// 				Expect(err.Error()).To(Equal("domain not valid"))
+// 			})
+// 		})
 
-		When("one of list data have RefIPs -1", func() {
-			It("should return error with message 'domain RefIPs not valid'", func() {
-				var test = make([]main.RowData, len(testData))
-				copy(test, testData)
-				test[10].RefIPs = -1
+// 		When("one of list data have RefIPs -1", func() {
+// 			It("should return error with message 'domain RefIPs not valid'", func() {
+// 				var test = make([]main.RowData, len(testData))
+// 				copy(test, testData)
+// 				test[10].RefIPs = -1
 
-				_, err := main.FilterAndFillData(".com", test)
+// 				_, err := main.FilterAndFillData(".com", test)
 
-				Expect(err).ToNot(BeNil())
-				Expect(err).To(MatchError("domain RefIPs not valid"))
-				Expect(err.Error()).To(Equal("domain RefIPs not valid"))
-			})
-		})
-	})
+// 				Expect(err).ToNot(BeNil())
+// 				Expect(err).To(MatchError("domain RefIPs not valid"))
+// 				Expect(err.Error()).To(Equal("domain RefIPs not valid"))
+// 			})
+// 		})
+// 	})
 
-	Context("Concurrent process", func() {
-		When("total data execute is 50", func() {
-			It("should execute less than 200 millisecond", func() {
-				main.FuncProcessGetTLD = func(data main.RowData, ch chan main.RowData, errCh chan error) {
-					time.Sleep(100 * time.Millisecond)
-					main.ProcessGetTLD(data, ch, errCh)
-				}
+// 	Context("Concurrent process", func() {
+// 		When("total data execute is 50", func() {
+// 			It("should execute less than 200 millisecond", func() {
+// 				main.FuncProcessGetTLD = func(data main.RowData, ch chan main.RowData, errCh chan error) {
+// 					time.Sleep(100 * time.Millisecond)
+// 					main.ProcessGetTLD(data, ch, errCh)
+// 				}
 
-				start := time.Now()
-				_, err := main.FilterAndFillData(".com", testData[:50])
+// 				start := time.Now()
+// 				_, err := main.FilterAndFillData(".com", testData[:50])
 
-				Expect(err).To(BeNil())
-				Expect(time.Since(start)).To(BeNumerically("<", 200*time.Millisecond))
-			})
-		})
+// 				Expect(err).To(BeNil())
+// 				Expect(time.Since(start)).To(BeNumerically("<", 200*time.Millisecond))
+// 			})
+// 		})
 
-		When("total data execute is 75", func() {
-			It("should execute less than 200 millisecond", func() {
-				main.FuncProcessGetTLD = func(data main.RowData, ch chan main.RowData, errCh chan error) {
-					time.Sleep(100 * time.Millisecond)
-					main.ProcessGetTLD(data, ch, errCh)
-				}
+// 		When("total data execute is 75", func() {
+// 			It("should execute less than 200 millisecond", func() {
+// 				main.FuncProcessGetTLD = func(data main.RowData, ch chan main.RowData, errCh chan error) {
+// 					time.Sleep(100 * time.Millisecond)
+// 					main.ProcessGetTLD(data, ch, errCh)
+// 				}
 
-				start := time.Now()
-				_, err := main.FilterAndFillData(".com", testData[:75])
+// 				start := time.Now()
+// 				_, err := main.FilterAndFillData(".com", testData[:75])
 
-				Expect(err).To(BeNil())
-				Expect(time.Since(start)).To(BeNumerically("<", 200*time.Millisecond))
-			})
-		})
-	})
+// 				Expect(err).To(BeNil())
+// 				Expect(time.Since(start)).To(BeNumerically("<", 200*time.Millisecond))
+// 			})
+// 		})
+// 	})
 
-	Context("success cases", func() {
-		When("TLD input is .com", func() {
-			It("should return filter list data with TLD is .com", func() {
-				result, err := main.FilterAndFillData(".com", testData)
+// 	Context("success cases", func() {
+// 		When("TLD input is .com", func() {
+// 			It("should return filter list data with TLD is .com", func() {
+// 				result, err := main.FilterAndFillData(".com", testData)
 
-				Expect(err).To(BeNil())
-				Expect(len(result)).To(Equal(69))
-			})
-		})
+// 				Expect(err).To(BeNil())
+// 				Expect(len(result)).To(Equal(69))
+// 			})
+// 		})
 
-		When("TLD input is .co.id", func() {
-			It("should return filter list data with TLD is .co.id", func() {
-				result, err := main.FilterAndFillData(".co.id", testData)
+// 		When("TLD input is .co.id", func() {
+// 			It("should return filter list data with TLD is .co.id", func() {
+// 				result, err := main.FilterAndFillData(".co.id", testData)
 
-				Expect(err).To(BeNil())
-				Expect(len(result)).To(Equal(0))
-			})
-		})
+// 				Expect(err).To(BeNil())
+// 				Expect(len(result)).To(Equal(0))
+// 			})
+// 		})
 
-		When("TLD input is .org", func() {
-			It("should return filter list data with TLD is .org", func() {
-				result, err := main.FilterAndFillData(".org", testData)
+// 		When("TLD input is .org", func() {
+// 			It("should return filter list data with TLD is .org", func() {
+// 				result, err := main.FilterAndFillData(".org", testData)
 
-				Expect(err).To(BeNil())
-				Expect(len(result)).To(Equal(11))
-			})
-		})
-	})
-})
+// 				Expect(err).To(BeNil())
+// 				Expect(len(result)).To(Equal(11))
+// 			})
+// 		})
+// 	})
+// })

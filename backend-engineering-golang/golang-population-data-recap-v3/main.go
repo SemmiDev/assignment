@@ -6,14 +6,6 @@ import (
 	"strings"
 )
 
-type Person struct {
-	Name      string
-	Age       int
-	Address   string
-	Height    *float64
-	IsMarried *bool
-}
-
 func PopulationData(data []string) (people []map[string]any) {
 	if len(data) == 0 {
 		return []map[string]any{}

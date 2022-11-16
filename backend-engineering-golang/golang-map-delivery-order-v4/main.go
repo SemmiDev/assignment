@@ -104,6 +104,16 @@ func CalculatePrice(customers Customers, day string) Customers {
 	return customers
 }
 
+/*
+1. cek apakah data kosong
+2. cek apakah day kosong
+3. cek apakah day ada di map AdminFee (AdminFee sam bikin map nya)
+4. bikin struct Customer
+5. bikin struct Customers (slice of Customer)
+6. bikin func CustomerFromString untuk parsing data dari text jadi struktur customer
+
+*/
+
 func DeliveryOrder(data []string, day string) map[string]float32 {
 	if len(data) == 0 {
 		return map[string]float32{}

@@ -5,37 +5,25 @@ import (
 	"strings"
 )
 
-// hello World => d_l_r_o_W o_l_l_e_H
-func ReverseString(str string) string {
-	
-	// reversed string
-	var result string
-
-	// split per kata
-	words := strings.Split(str, " ")
-
-	for i := len(words) - 1; i >= 0; i-- {
-	// [world] [hello]
-	//    1       0
-		
-		// reverse per word, cuman smpe 1
-		// len 5 = world
-		for j := len(words[i]) - 1; j >= 1; j-- {
-			// d_l_r_o_w
-			result += string(words[i][j]) + "_"
-		}
-
-		result += string(words[i][0])
-		// make sure setelah kata terakhir ga ada space
-		if i != 0 {
-			result += " "
-		}
+func ReverseString(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
 	}
 
-	return result
+	splitS := strings.Split(string(runes), " ")
+	result := make([]string, 0, len(splitS))
+
+	for _, v := range strings.Split(string(runes), " ") {
+		splitV := strings.Join(strings.Split(v, ""), "_")
+		result = append(result, splitV, " ")
+	}
+
+	return strings.TrimSuffix(strings.Join(result, ""), " ")
 }
 
 // gunakan untuk melakukan debug
 func main() {
-	fmt.Println(ReverseString("Hello World"))
+	a := ReverseString("Hello World")
+	fmt.Println(a)
 }
