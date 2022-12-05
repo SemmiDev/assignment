@@ -3,6 +3,7 @@ package repository
 import (
 	"a21hc3NpZ25tZW50/model"
 	"time"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -59,13 +60,14 @@ func (u *SessionsRepository) SessionAvailToken(token string) (model.Session, err
 		return model.Session{}, err
 	}
 
-	if !u.TokenExpired(ses) {
-		return ses, nil
+	if u.TokenExpired(ses) {
+		return model.Session{}, gorm.ErrRecordNotFound
 	}
 
-	return model.Session{}, gorm.ErrRecordNotFound
+	return ses, nil
 }
 
 func (u *SessionsRepository) TokenExpired(s model.Session) bool {
+	fmt.Println(s.Expiry)
 	return s.Expiry.Before(time.Now())
 }

@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+    postgres:
+        container_name: assignments
+        image: postgres:14-alpine
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        restart: always
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: secret
+            POSTGRES_DB: assignments
+        ports:
+            - '5432:5432'
+
+volumes:
+    db-data:
+        driver: local

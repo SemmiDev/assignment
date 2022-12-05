@@ -6,6 +6,7 @@ import (
 	repo "a21hc3NpZ25tZW50/repository"
 	"time"
 
+	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -115,6 +116,7 @@ var _ = Describe("Cashier App with GORM", func() {
 					Expect(result.Username).To(Equal(session.Username))
 
 					token, err := sessionRepo.SessionAvailToken("cc03dbea-4085-47ba-86fe-020f5d01a9d8")
+					fmt.Println("token = " + token.Token)
 					Expect(err).ShouldNot(HaveOccurred())
 					Expect(token.Token).To(Equal(session.Token))
 					Expect(token.Username).To(Equal(session.Username))
